@@ -22,7 +22,8 @@ fun WelcomeScreen(
             onStartClick = onStartClick,
             onImportClick = onImportClick,
             appName = appNameProvider.appName,
-            showImportButton = !onboardingMigrationManager.isFeatureIncluded(),
+            // [BJJGJ-CUSTOM] Disable onboarding import so setup always starts with the fixed local-part flow.
+            showImportButton = false,
             modifier = Modifier.padding(innerPadding),
         )
     }

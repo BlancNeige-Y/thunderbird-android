@@ -190,11 +190,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat(), ConfirmationDialogFr
     }
 
     private fun initializeIncomingServer() {
-        findPreference<Preference>(PREFERENCE_INCOMING_SERVER)?.onClick {
-            FeatureLauncherActivity.launch(
-                context = requireActivity(),
-                target = FeatureLauncherTarget.AccountEditIncomingSettings(accountUuid),
-            )
+        findPreference<Preference>(PREFERENCE_INCOMING_SERVER)?.apply {
+            // [BJJGJ-CUSTOM] Server settings are fixed for this deployment and must not be editable.
+            remove()
         }
     }
 
@@ -219,11 +217,9 @@ class AccountSettingsFragment : PreferenceFragmentCompat(), ConfirmationDialogFr
     }
 
     private fun initializeOutgoingServer() {
-        findPreference<Preference>(PREFERENCE_OUTGOING_SERVER)?.onClick {
-            FeatureLauncherActivity.launch(
-                context = requireActivity(),
-                target = FeatureLauncherTarget.AccountEditOutgoingSettings(accountUuid),
-            )
+        findPreference<Preference>(PREFERENCE_OUTGOING_SERVER)?.apply {
+            // [BJJGJ-CUSTOM] Server settings are fixed for this deployment and must not be editable.
+            remove()
         }
     }
 

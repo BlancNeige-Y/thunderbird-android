@@ -9,6 +9,10 @@
     <string name="account_setup_auto_discovery_validation_error_email_address_not_supported">This email address is not supported.</string>
     <string name="account_setup_auto_discovery_validation_error_email_address_invalid">This is not recognized as a valid email address.</string>
     <string name="account_setup_auto_discovery_validation_error_password_required">Password is required.</string>
+    <!-- [BJJGJ-CUSTOM] Explain the fixed-domain local-part-only account input. -->
+    <string name="account_setup_local_part_label">Account name</string>
+    <string name="account_setup_local_part_hint">Enter your account name. The app will use the fixed domain @bjjgj.gov.cn.</string>
+    <string name="account_setup_local_part_full_email">Full email: %s</string>
 
     <string name="account_setup_auto_discovery_connection_security_start_tls">StartTLS</string>
     <string name="account_setup_auto_discovery_connection_security_ssl">SSL/TLS</string>

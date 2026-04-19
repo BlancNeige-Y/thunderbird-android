@@ -20,6 +20,11 @@ class SettingsImporter internal constructor(
     private val accountSettingsWriter: AccountSettingsWriter,
     private val unifiedInboxConfigurator: UnifiedInboxConfigurator,
 ) {
+    private companion object {
+        // [BJJGJ-CUSTOM] Restrict imported accounts to the approved organization domain.
+        const val REQUIRED_EMAIL_DOMAIN = "@bjjgj.gov.cn"
+    }
+
     /**
      * Parses an import [InputStream] and returns information on whether it contains global settings and/or account
      * settings. For all account configurations found, the name of the account along with the account UUID is returned.
@@ -39,12 +44,14 @@ class SettingsImporter internal constructor(
             // If the stream contains global settings the "globalSettings" member will not be null
             val globalSettings = (imported.globalSettings != null)
 
-            val accounts = imported.accounts.map { importedAccount ->
-                AccountDescription(
-                    name = getAccountDisplayName(importedAccount),
-                    uuid = importedAccount.uuid,
-                )
-            }
+            val accounts = imported.accounts
+                .filter { account -> account.isBjjgjAccount() }
+                .map { importedAccount ->
+                    AccountDescription(
+                        name = getAccountDisplayName(importedAccount),
+                        uuid = importedAccount.uuid,
+                    )
+                }
 
             if (!globalSettings && accounts.isEmpty()) {
                 throw SettingsImportExportException("Neither global settings nor account settings could be found")
@@ -135,7 +142,20 @@ class SettingsImporter internal constructor(
 
         return contents.copy(
             globalSettings = contents.globalSettings.takeIf { importGeneralSettings },
-            accounts = contents.accounts.filter { it.uuid in importAccountUuids },
+            accounts = contents.accounts.filter { account ->
+                val isRequested = account.uuid in importAccountUuids
+                val isAllowed = account.isBjjgjAccount()
+
+                if (isRequested && !isAllowed) {
+                    Log.w(
+                        // [BJJGJ-CUSTOM] External settings import must not allow non-compliant accounts.
+                        "Skipping import of account %s because it doesn't match the required domain",
+                        account.uuid,
+                    )
+                }
+
+                isRequested && isAllowed
+            },
         )
     }
 
@@ -202,5 +222,20 @@ class SettingsImporter internal constructor(
         return account.name?.takeIf { it.isNotEmpty() }
             ?: account.identities?.firstOrNull()?.email
             ?: error("Account name missing")
+    }
+
+    private fun SettingsFile.Account.isBjjgjAccount(): Boolean {
+        // [BJJGJ-CUSTOM] Accept imports only when all visible account addresses stay inside the approved domain.
+        val candidateValues = buildList<String?> {
+            addAll(identities.orEmpty().mapNotNull { identity -> identity.email })
+            add(incoming?.username)
+            add(outgoing?.username)
+        }
+            .filterNotNull()
+            .filter { value -> value.isNotBlank() }
+
+        return candidateValues.all { value ->
+            value.endsWith(REQUIRED_EMAIL_DOMAIN, ignoreCase = true)
+        }
     }
 }

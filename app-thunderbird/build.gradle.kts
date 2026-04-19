@@ -17,7 +17,8 @@ android {
         versionCode = 4
         versionName = "20.0"
 
-        buildConfigField("String", "CLIENT_INFO_APP_NAME", "\"Thunderbird for Android\"")
+        // [BJJGJ-CUSTOM] Replace upstream client branding with the organization name.
+        buildConfigField("String", "CLIENT_INFO_APP_NAME", "\"北京市监狱管理局\"")
     }
 
     androidResources {

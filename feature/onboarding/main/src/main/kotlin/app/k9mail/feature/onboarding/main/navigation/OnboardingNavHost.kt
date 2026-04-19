@@ -69,11 +69,8 @@ fun OnboardingNavHost(
         composable(route = NESTED_NAVIGATION_ROUTE_WELCOME) {
             WelcomeScreen(
                 onStartClick = {
-                    if (onboardingMigrationManager.isFeatureIncluded()) {
-                        navController.navigateToMigration()
-                    } else {
-                        navController.navigateToAccountSetup()
-                    }
+                    // [BJJGJ-CUSTOM] Skip migration/intermediate onboarding and open the constrained account setup flow.
+                    navController.navigateToAccountSetup()
                 },
                 onImportClick = { navController.navigateToSettingsImport() },
                 appNameProvider = koinInject(),

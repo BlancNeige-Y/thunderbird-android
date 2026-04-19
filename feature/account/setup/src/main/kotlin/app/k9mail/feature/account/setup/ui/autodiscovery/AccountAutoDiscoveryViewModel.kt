@@ -1,24 +1,20 @@
 package app.k9mail.feature.account.setup.ui.autodiscovery
 
 import androidx.lifecycle.viewModelScope
-import app.k9mail.autodiscovery.api.AutoDiscoveryResult
-import app.k9mail.autodiscovery.api.ImapServerSettings
-import app.k9mail.autodiscovery.api.IncomingServerSettings
-import app.k9mail.autodiscovery.demo.DemoServerSettings
 import app.k9mail.feature.account.common.domain.AccountDomainContract
-import app.k9mail.feature.account.common.domain.entity.IncomingProtocolType
 import app.k9mail.feature.account.oauth.domain.entity.OAuthResult
 import app.k9mail.feature.account.oauth.ui.AccountOAuthContract
 import app.k9mail.feature.account.setup.domain.DomainContract.UseCase
-import app.k9mail.feature.account.setup.domain.entity.AutoDiscoveryAuthenticationType
-import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.AutoDiscoveryUiResult
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.ConfigStep
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.Effect
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.Error
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.Event
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.State
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.Validator
-import kotlinx.coroutines.launch
+import com.fsck.k9.mail.AuthType
+import com.fsck.k9.mail.ConnectionSecurity
+import com.fsck.k9.mail.ServerSettings
+import net.thunderbird.core.common.mail.Protocols
 import net.thunderbird.core.outcome.Outcome
 import net.thunderbird.core.ui.contract.mvi.BaseViewModel
 import net.thunderbird.core.validation.input.StringInputField
@@ -31,10 +27,19 @@ internal class AccountAutoDiscoveryViewModel(
     private val accountStateRepository: AccountDomainContract.AccountStateRepository,
     override val oAuthViewModel: AccountOAuthContract.ViewModel,
 ) : BaseViewModel<State, Event, Effect>(initialState), AccountAutoDiscoveryContract.ViewModel {
+    private companion object {
+        // [BJJGJ-CUSTOM] Fixed deployment constraints for address and server construction.
+        const val EMAIL_DOMAIN = "bjjgj.gov.cn"
+        const val INCOMING_HOST = "172.26.82.125"
+        const val INCOMING_PORT = 110
+        const val OUTGOING_HOST = "172.26.82.125"
+        const val OUTGOING_PORT = 25
+    }
 
     override fun initState(state: State) {
         updateState {
-            state.copy()
+            // [BJJGJ-CUSTOM] Keep the derived full address synchronized when state is restored.
+            state.copy(fullEmailAddress = buildFullEmailAddress(state.emailAddress.value))
         }
     }
 
@@ -42,23 +47,24 @@ internal class AccountAutoDiscoveryViewModel(
         when (event) {
             is Event.EmailAddressChanged -> changeEmailAddress(event.emailAddress)
             is Event.PasswordChanged -> changePassword(event.password)
-            is Event.ResultApprovalChanged -> changeConfigurationApproval(event.confirmed)
+            is Event.ResultApprovalChanged -> Unit
             is Event.OnOAuthResult -> onOAuthResult(event.result)
 
             Event.OnNextClicked -> onNext()
             Event.OnBackClicked -> onBack()
             Event.OnRetryClicked -> onRetry()
-            Event.OnEditConfigurationClicked -> {
-                navigateNext(isAutomaticConfig = false)
-            }
+            Event.OnEditConfigurationClicked -> Unit
         }
     }
 
     private fun changeEmailAddress(emailAddress: String) {
         accountStateRepository.clear()
+        // [BJJGJ-CUSTOM] Input layer enforcement: only accept the local-part and strip '@' immediately.
+        val sanitizedLocalPart = emailAddress.substringBefore('@').trim()
         updateState {
             State(
-                emailAddress = StringInputField(value = emailAddress),
+                emailAddress = StringInputField(value = sanitizedLocalPart),
+                fullEmailAddress = buildFullEmailAddress(sanitizedLocalPart),
                 isNextButtonVisible = true,
             )
         }
@@ -72,31 +78,12 @@ internal class AccountAutoDiscoveryViewModel(
         }
     }
 
-    private fun changeConfigurationApproval(approved: Boolean) {
-        updateState {
-            it.copy(
-                configurationApproved = it.configurationApproved.updateValue(approved),
-            )
-        }
-    }
-
     private fun onNext() {
         when (state.value.configStep) {
-            ConfigStep.EMAIL_ADDRESS ->
-                if (state.value.error != null) {
-                    updateState {
-                        it.copy(
-                            error = null,
-                            configStep = ConfigStep.PASSWORD,
-                        )
-                    }
-                } else {
-                    submitEmail()
-                }
-
+            ConfigStep.EMAIL_ADDRESS -> submitEmail()
             ConfigStep.PASSWORD -> submitPassword()
             ConfigStep.OAUTH -> Unit
-            ConfigStep.MANUAL_SETUP -> navigateNext(isAutomaticConfig = false)
+            ConfigStep.MANUAL_SETUP -> Unit
         }
     }
 
@@ -104,12 +91,12 @@ internal class AccountAutoDiscoveryViewModel(
         updateState {
             it.copy(error = null)
         }
-        loadAutoDiscovery()
     }
 
     private fun submitEmail() {
         with(state.value) {
-            val emailValidationResult = validator.validateEmailAddress(emailAddress.value)
+            // [BJJGJ-CUSTOM] Validation always runs against the constructed full address.
+            val emailValidationResult = validator.validateEmailAddress(fullEmailAddress)
             val hasError = emailValidationResult is Outcome.Failure
 
             updateState {
@@ -119,124 +106,43 @@ internal class AccountAutoDiscoveryViewModel(
             }
 
             if (!hasError) {
-                loadAutoDiscovery()
+                updateState {
+                    it.copy(
+                        configStep = ConfigStep.PASSWORD,
+                        error = null,
+                    )
+                }
             }
-        }
-    }
-
-    private fun loadAutoDiscovery() {
-        viewModelScope.launch {
-            updateState {
-                it.copy(
-                    isLoading = true,
-                )
-            }
-
-            val result = getAutoDiscovery.execute(state.value.emailAddress.value)
-            when (result) {
-                AutoDiscoveryResult.NoUsableSettingsFound -> updateNoSettingsFound()
-                is AutoDiscoveryResult.Settings -> updateAutoDiscoverySettings(result)
-                is AutoDiscoveryResult.NetworkError -> updateError(Error.NetworkError)
-                is AutoDiscoveryResult.UnexpectedException -> updateError(Error.UnknownError)
-            }
-        }
-    }
-
-    private fun updateNoSettingsFound() {
-        updateState {
-            it.copy(
-                isLoading = false,
-                autoDiscoverySettings = null,
-                configStep = ConfigStep.MANUAL_SETUP,
-            )
-        }
-    }
-
-    private fun updateAutoDiscoverySettings(settings: AutoDiscoveryResult.Settings) {
-        if (settings.incomingServerSettings is DemoServerSettings) {
-            updateState {
-                it.copy(
-                    isLoading = false,
-                    autoDiscoverySettings = settings,
-                    configStep = ConfigStep.PASSWORD,
-                    isNextButtonVisible = true,
-                )
-            }
-            return
-        }
-
-        val imapServerSettings = settings.incomingServerSettings as ImapServerSettings
-        val isOAuth = imapServerSettings.authenticationTypes.first() == AutoDiscoveryAuthenticationType.OAuth2
-
-        if (isOAuth) {
-            oAuthViewModel.initState(
-                AccountOAuthContract.State(
-                    hostname = imapServerSettings.hostname.value,
-                    emailAddress = state.value.emailAddress.value,
-                ),
-            )
-        }
-
-        updateState {
-            it.copy(
-                isLoading = false,
-                autoDiscoverySettings = settings,
-                configStep = if (isOAuth) ConfigStep.OAUTH else ConfigStep.PASSWORD,
-                isNextButtonVisible = !isOAuth,
-            )
-        }
-    }
-
-    private fun updateError(error: Error) {
-        updateState {
-            it.copy(
-                isLoading = false,
-                error = error,
-            )
         }
     }
 
     private fun submitPassword() {
         with(state.value) {
-            val emailValidationResult = validator.validateEmailAddress(emailAddress.value)
+            // [BJJGJ-CUSTOM] Validation always runs against the constructed full address.
+            val emailValidationResult = validator.validateEmailAddress(fullEmailAddress)
             val passwordValidationResult = validator.validatePassword(password.value)
-            val configurationApprovalValidationResult = validator.validateConfigurationApproval(
-                isApproved = configurationApproved.value,
-                isAutoDiscoveryTrusted = autoDiscoverySettings?.isTrusted,
-            )
             val hasError = listOf(
                 emailValidationResult,
                 passwordValidationResult,
-                configurationApprovalValidationResult,
             ).any { it is Outcome.Failure }
 
             updateState {
                 it.copy(
                     emailAddress = it.emailAddress.updateFromValidationOutcome(emailValidationResult),
                     password = it.password.updateFromValidationOutcome(passwordValidationResult),
-                    configurationApproved = it.configurationApproved.updateFromValidationOutcome(
-                        configurationApprovalValidationResult,
-                    ),
                 )
             }
 
             if (!hasError) {
-                navigateNext(state.value.autoDiscoverySettings != null)
+                storeConstrainedAccountState()
+                navigateNext()
             }
         }
     }
 
     private fun onBack() {
         when (state.value.configStep) {
-            ConfigStep.EMAIL_ADDRESS -> {
-                if (state.value.error != null) {
-                    updateState {
-                        it.copy(error = null)
-                    }
-                } else {
-                    navigateBack()
-                }
-            }
+            ConfigStep.EMAIL_ADDRESS -> navigateBack()
 
             ConfigStep.OAUTH,
             ConfigStep.PASSWORD,
@@ -252,47 +158,61 @@ internal class AccountAutoDiscoveryViewModel(
     }
 
     private fun onOAuthResult(result: OAuthResult) {
-        if (result is OAuthResult.Success) {
-            updateState {
-                it.copy(authorizationState = result.authorizationState)
-            }
-
-            navigateNext(isAutomaticConfig = true)
-        } else {
-            updateState {
-                it.copy(authorizationState = null)
-            }
+        // [BJJGJ-CUSTOM] OAuth-based setup is disabled together with autoconfig for this deployment.
+        if (result !is OAuthResult.Success) {
+            return
         }
     }
 
     private fun navigateBack() = emitEffect(Effect.NavigateBack)
 
-    private fun navigateNext(isAutomaticConfig: Boolean) {
-        accountStateRepository.setState(state.value.toAccountState())
-
+    private fun navigateNext() {
         emitEffect(
             Effect.NavigateNext(
-                result = mapToAutoDiscoveryResult(
-                    isAutomaticConfig = isAutomaticConfig,
-                    incomingServerSettings = state.value.autoDiscoverySettings?.incomingServerSettings,
+                result = AccountAutoDiscoveryContract.AutoDiscoveryUiResult(
+                    // [BJJGJ-CUSTOM] Reuse validation-only navigation while keeping all server settings fixed.
+                    isAutomaticConfig = true,
+                    incomingProtocolType = null,
                 ),
             ),
         )
     }
 
-    private fun mapToAutoDiscoveryResult(
-        isAutomaticConfig: Boolean,
-        incomingServerSettings: IncomingServerSettings?,
-    ): AutoDiscoveryUiResult {
-        val incomingProtocolType = if (incomingServerSettings is ImapServerSettings) {
-            IncomingProtocolType.IMAP
-        } else {
-            null
-        }
+    private fun storeConstrainedAccountState() {
+        val fullEmailAddress = state.value.fullEmailAddress
+        val password = state.value.password.value
 
-        return AutoDiscoveryUiResult(
-            isAutomaticConfig = isAutomaticConfig,
-            incomingProtocolType = incomingProtocolType,
+        // [BJJGJ-CUSTOM] Construction layer enforcement: always use the fixed domain and preset POP3/SMTP servers.
+        accountStateRepository.setState(
+            accountStateRepository.getState().copy(
+                emailAddress = fullEmailAddress,
+                incomingServerSettings = ServerSettings(
+                    type = Protocols.POP3,
+                    host = INCOMING_HOST,
+                    port = INCOMING_PORT,
+                    connectionSecurity = ConnectionSecurity.NONE,
+                    authenticationType = AuthType.PLAIN,
+                    username = fullEmailAddress,
+                    password = password,
+                    clientCertificateAlias = null,
+                ),
+                outgoingServerSettings = ServerSettings(
+                    type = Protocols.SMTP,
+                    host = OUTGOING_HOST,
+                    port = OUTGOING_PORT,
+                    connectionSecurity = ConnectionSecurity.NONE,
+                    authenticationType = AuthType.PLAIN,
+                    username = fullEmailAddress,
+                    password = password,
+                    clientCertificateAlias = null,
+                ),
+                authorizationState = null,
+                specialFolderSettings = null,
+            ),
         )
+    }
+
+    private fun buildFullEmailAddress(localPart: String): String {
+        return localPart.takeIf { it.isNotBlank() }?.let { "$it@$EMAIL_DOMAIN" }.orEmpty()
     }
 }

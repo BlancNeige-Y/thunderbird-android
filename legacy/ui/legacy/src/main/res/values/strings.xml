@@ -11,6 +11,14 @@
     <string name="source_code">Source code</string>
     <string name="app_license">Apache License, Version 2.0</string>
     <string name="about_project_title">Open Source Project</string>
+    <!-- [BJJGJ-CUSTOM] Keep upstream attribution but move it below the organization-specific branding. -->
+    <string name="about_organization_title">%1$s</string>
+    <string name="about_deployment_title">Organization</string>
+    <string name="about_deployment_value">北京市监狱管理局</string>
+    <string name="about_open_source_attribution">Powered by Thunderbird for Android and K-9 Mail</string>
+    <string name="about_open_source_licenses_title">Open Source Licenses</string>
+    <string name="about_open_source_license_value">Apache License, Version 2.0</string>
+    <string name="about_open_source_license_subtitle">Thunderbird attribution and third-party notices</string>
     <string name="about_website_title">Website</string>
     <string name="get_help_title">Get help</string>
     <string name="user_forum_title">User forum</string>

@@ -15,22 +15,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import app.k9mail.core.ui.compose.designsystem.atom.text.TextBodyMedium
+import app.k9mail.core.ui.compose.designsystem.atom.textfield.TextFieldOutlined
 import app.k9mail.core.ui.compose.designsystem.molecule.ContentLoadingErrorView
 import app.k9mail.core.ui.compose.designsystem.molecule.ErrorView
 import app.k9mail.core.ui.compose.designsystem.molecule.LoadingView
-import app.k9mail.core.ui.compose.designsystem.molecule.input.EmailAddressInput
+import app.k9mail.core.ui.compose.designsystem.molecule.input.InputLayout
 import app.k9mail.core.ui.compose.designsystem.molecule.input.PasswordInput
 import app.k9mail.core.ui.compose.designsystem.template.ResponsiveWidthContainer
 import app.k9mail.feature.account.common.ui.AppTitleTopHeader
 import app.k9mail.feature.account.common.ui.WizardNavigationBar
 import app.k9mail.feature.account.common.ui.WizardNavigationBarState
 import app.k9mail.feature.account.oauth.ui.AccountOAuthContract
-import app.k9mail.feature.account.oauth.ui.AccountOAuthView
 import app.k9mail.feature.account.setup.R
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.Event
 import app.k9mail.feature.account.setup.ui.autodiscovery.AccountAutoDiscoveryContract.State
-import app.k9mail.feature.account.setup.ui.autodiscovery.view.AutoDiscoveryResultApprovalView
-import app.k9mail.feature.account.setup.ui.autodiscovery.view.AutoDiscoveryResultView
 import net.thunderbird.core.ui.compose.common.modifier.testTagAsResourceId
 import net.thunderbird.core.ui.compose.theme2.MainTheme
 
@@ -137,26 +138,28 @@ internal fun ContentView(
             .padding(MainTheme.spacings.quadruple)
             .then(modifier),
     ) {
-        if (state.configStep != AccountAutoDiscoveryContract.ConfigStep.EMAIL_ADDRESS) {
-            AutoDiscoveryResultView(
-                settings = state.autoDiscoverySettings,
-                onEditConfigurationClick = { onEvent(Event.OnEditConfigurationClicked) },
+        InputLayout(
+            errorMessage = state.emailAddress.error?.toAutoDiscoveryValidationErrorString(resources),
+            contentPadding = PaddingValues(),
+        ) {
+            TextFieldOutlined(
+                value = state.emailAddress.value,
+                onValueChange = { onEvent(Event.EmailAddressChanged(it)) },
+                label = stringResource(id = R.string.account_setup_local_part_label),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                hasError = state.emailAddress.error != null,
+                modifier = Modifier.testTagAsResourceId("account_setup_email_address_input"),
             )
-            if (state.autoDiscoverySettings != null && state.autoDiscoverySettings.isTrusted.not()) {
-                AutoDiscoveryResultApprovalView(
-                    approvalState = state.configurationApproved,
-                    onApprovalChange = { onEvent(Event.ResultApprovalChanged(it)) },
-                )
-            }
-            Spacer(modifier = Modifier.height(MainTheme.spacings.double))
         }
 
-        EmailAddressInput(
-            emailAddress = state.emailAddress.value,
-            errorMessage = state.emailAddress.error?.toAutoDiscoveryValidationErrorString(resources),
-            onEmailAddressChange = { onEvent(Event.EmailAddressChanged(it)) },
-            contentPadding = PaddingValues(),
-            modifier = Modifier.testTagAsResourceId("account_setup_email_address_input"),
+        // [BJJGJ-CUSTOM] Show the final enforced address so the real account identifier is always visible.
+        TextBodyMedium(
+            text = if (state.fullEmailAddress.isNotBlank()) {
+                stringResource(id = R.string.account_setup_local_part_full_email, state.fullEmailAddress)
+            } else {
+                stringResource(id = R.string.account_setup_local_part_hint)
+            },
+            modifier = Modifier.padding(top = MainTheme.spacings.default),
         )
 
         if (state.configStep == AccountAutoDiscoveryContract.ConfigStep.PASSWORD) {
@@ -167,15 +170,6 @@ internal fun ContentView(
                 onPasswordChange = { onEvent(Event.PasswordChanged(it)) },
                 contentPadding = PaddingValues(),
                 modifier = Modifier.testTagAsResourceId("account_setup_password_input"),
-            )
-        } else if (state.configStep == AccountAutoDiscoveryContract.ConfigStep.OAUTH) {
-            val isAutoDiscoverySettingsTrusted = state.autoDiscoverySettings?.isTrusted ?: false
-            val isConfigurationApproved = state.configurationApproved.value ?: false
-            Spacer(modifier = Modifier.height(MainTheme.spacings.double))
-            AccountOAuthView(
-                onOAuthResult = { result -> onEvent(Event.OnOAuthResult(result)) },
-                viewModel = oAuthViewModel,
-                isEnabled = isAutoDiscoverySettingsTrusted || isConfigurationApproved,
             )
         }
     }

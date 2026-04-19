@@ -30,6 +30,8 @@ interface AccountAutoDiscoveryContract {
         val configStep: ConfigStep = ConfigStep.EMAIL_ADDRESS,
         val emailAddress: StringInputField = StringInputField(),
         val password: StringInputField = StringInputField(),
+        // [BJJGJ-CUSTOM] Always expose the final address for the fixed deployment domain.
+        val fullEmailAddress: String = "",
         val autoDiscoverySettings: AutoDiscoveryResult.Settings? = null,
         val configurationApproved: BooleanInputField = BooleanInputField(),
         val authorizationState: AuthorizationState? = null,

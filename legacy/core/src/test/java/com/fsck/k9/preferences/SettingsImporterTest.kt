@@ -339,4 +339,44 @@ class SettingsImporterTest : K9RobolectricTest() {
             settingsImporter.getImportStreamContents(inputStream)
         }.isInstanceOf<SettingsImportExportException>()
     }
+
+    @Test
+    fun `importSettings() should skip non-bjjgj accounts`() = runTest {
+        val accountUuid = UUID.randomUUID().toString()
+        val inputStream =
+            """
+            <k9settings format="1" version="1">
+              <accounts>
+                <account uuid="$accountUuid">
+                  <name>External Account</name>
+                  <incoming-server type="IMAP">
+                    <connection-security>SSL_TLS_REQUIRED</connection-security>
+                    <username>user@gmail.com</username>
+                    <authentication-type>PLAIN</authentication-type>
+                    <host>googlemail.com</host>
+                  </incoming-server>
+                  <outgoing-server type="SMTP">
+                    <connection-security>SSL_TLS_REQUIRED</connection-security>
+                    <username>user@gmail.com</username>
+                    <authentication-type>PLAIN</authentication-type>
+                    <host>googlemail.com</host>
+                  </outgoing-server>
+                  <settings>
+                    <value key="a">b</value>
+                  </settings>
+                  <identities>
+                    <identity>
+                      <email>user@gmail.com</email>
+                    </identity>
+                  </identities>
+                </account>
+              </accounts>
+            </k9settings>
+            """.trimIndent().byteInputStream()
+
+        val results = settingsImporter.importSettings(inputStream, globalSettings = false, accountUuids = listOf(accountUuid))
+
+        assertThat(results.importedAccounts).isEmpty()
+        assertThat(results.erroneousAccounts).isEmpty()
+    }
 }

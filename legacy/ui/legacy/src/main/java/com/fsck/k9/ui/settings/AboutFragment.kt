@@ -63,8 +63,9 @@ class AboutFragment : Fragment() {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
             )
             val appLogoResId = resolveAppLogoResId(requireContext())
-            val aboutTitle = context.getString(R.string.about_title, appNameProvider.appName)
-            val projectTitle = context.getString(R.string.about_project_title)
+            // [BJJGJ-CUSTOM] Show organization branding first and keep upstream attribution in a lower-prominence section.
+            val aboutTitle = context.getString(R.string.about_organization_title, appNameProvider.appName)
+            val projectTitle = context.getString(R.string.about_open_source_licenses_title)
             val librariesTitle = context.getString(R.string.about_libraries)
 
             setContent {
@@ -211,16 +212,17 @@ fun AboutScreen(
                 onClick = displayChangeLog,
             )
             SectionContent(
-                sectionLabel = stringResource(R.string.authors),
-                sectionText = stringResource(R.string.about_app_authors_k9),
-                secondarySectionText = stringResource(R.string.about_app_authors_thunderbird),
+                sectionLabel = stringResource(R.string.about_deployment_title),
+                sectionText = stringResource(R.string.about_deployment_value),
+                secondarySectionText = stringResource(R.string.about_open_source_attribution),
                 sectionImageId = DesignSystemR.drawable.ic_group,
                 onClick = displayAuthors,
             )
 
             SectionContent(
-                sectionLabel = stringResource(R.string.license),
-                sectionText = stringResource(R.string.app_license),
+                sectionLabel = stringResource(R.string.about_open_source_licenses_title),
+                sectionText = stringResource(R.string.about_open_source_license_value),
+                secondarySectionText = stringResource(R.string.about_open_source_license_subtitle),
                 sectionImageId = DesignSystemR.drawable.ic_code,
                 onClick = displayLicense,
             )

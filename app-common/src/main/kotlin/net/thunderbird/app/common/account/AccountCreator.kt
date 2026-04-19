@@ -10,6 +10,8 @@ import com.fsck.k9.Core
 import com.fsck.k9.Preferences
 import com.fsck.k9.account.DeletePolicyProvider
 import com.fsck.k9.controller.MessagingController
+import com.fsck.k9.mail.AuthType
+import com.fsck.k9.mail.ConnectionSecurity
 import com.fsck.k9.mail.ServerSettings
 import com.fsck.k9.mail.store.imap.ImapStoreSettings.autoDetectNamespace
 import com.fsck.k9.mail.store.imap.ImapStoreSettings.createExtra
@@ -42,6 +44,13 @@ internal class AccountCreator(
     private val unifiedInboxConfigurator: UnifiedInboxConfigurator,
     private val coroutineDispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) : AccountSetupExternalContract.AccountCreator {
+    private companion object {
+        // [BJJGJ-CUSTOM] Enforce the deployment-specific account and server settings at persistence time.
+        const val REQUIRED_EMAIL_DOMAIN = "@bjjgj.gov.cn"
+        const val REQUIRED_HOST = "172.26.82.125"
+        const val REQUIRED_POP3_PORT = 110
+        const val REQUIRED_SMTP_PORT = 25
+    }
 
     @Suppress("TooGenericExceptionCaught")
     override suspend fun createAccount(account: Account): AccountCreatorResult {
@@ -55,6 +64,7 @@ internal class AccountCreator(
     }
 
     private suspend fun create(account: Account): String {
+        validateBjjgjAccount(account)
         val newAccount = preferences.newAccount(account.uuid)
 
         newAccount.email = account.emailAddress
@@ -105,6 +115,55 @@ internal class AccountCreator(
         }
 
         return newAccount.uuid
+    }
+
+    private fun validateBjjgjAccount(account: Account) {
+        // [BJJGJ-CUSTOM] Reject any account that doesn't match the fixed domain and server policy.
+        require(account.emailAddress.endsWith(REQUIRED_EMAIL_DOMAIN, ignoreCase = true)) {
+            "Only $REQUIRED_EMAIL_DOMAIN accounts are allowed"
+        }
+
+        validateServerSettings(
+            serverSettings = account.incomingServerSettings,
+            expectedType = Protocols.POP3,
+            expectedPort = REQUIRED_POP3_PORT,
+            expectedLabel = "incoming",
+            expectedUsername = account.emailAddress,
+        )
+        validateServerSettings(
+            serverSettings = account.outgoingServerSettings,
+            expectedType = Protocols.SMTP,
+            expectedPort = REQUIRED_SMTP_PORT,
+            expectedLabel = "outgoing",
+            expectedUsername = account.emailAddress,
+        )
+    }
+
+    private fun validateServerSettings(
+        serverSettings: ServerSettings,
+        expectedType: String,
+        expectedPort: Int,
+        expectedLabel: String,
+        expectedUsername: String,
+    ) {
+        require(serverSettings.type == expectedType) {
+            "Unexpected $expectedLabel protocol"
+        }
+        require(serverSettings.host == REQUIRED_HOST) {
+            "Unexpected $expectedLabel host"
+        }
+        require(serverSettings.port == expectedPort) {
+            "Unexpected $expectedLabel port"
+        }
+        require(serverSettings.connectionSecurity == ConnectionSecurity.NONE) {
+            "Unexpected $expectedLabel security"
+        }
+        require(serverSettings.authenticationType == AuthType.PLAIN) {
+            "Unexpected $expectedLabel authentication"
+        }
+        require(serverSettings.username.equals(expectedUsername, ignoreCase = true)) {
+            "Unexpected $expectedLabel username"
+        }
     }
 
     /**
