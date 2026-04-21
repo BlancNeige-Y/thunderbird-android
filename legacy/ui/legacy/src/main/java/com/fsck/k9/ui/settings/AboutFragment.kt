@@ -29,9 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -40,12 +38,8 @@ import app.k9mail.core.ui.compose.designsystem.atom.text.TextBodyMedium
 import app.k9mail.core.ui.compose.designsystem.atom.text.TextTitleMedium
 import app.k9mail.core.ui.compose.designsystem.atom.text.TextTitleSmall
 import com.fsck.k9.ui.R
-import com.fsck.k9.ui.settings.AboutContract.Effect
-import com.fsck.k9.ui.settings.AboutContract.Event
-import kotlinx.collections.immutable.ImmutableList
 import net.thunderbird.core.common.provider.AppNameProvider
 import net.thunderbird.core.ui.compose.theme2.MainTheme
-import net.thunderbird.core.ui.contract.mvi.observe
 import net.thunderbird.core.ui.theme.api.FeatureThemeProvider
 import org.koin.android.ext.android.inject
 import app.k9mail.core.ui.legacy.designsystem.R as DesignSystemR
@@ -56,67 +50,24 @@ class AboutFragment : Fragment() {
     private val appNameProvider: AppNameProvider by inject()
     private val viewModel: AboutViewModel by inject()
 
-    @Suppress("LongMethod")
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(
-                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed,
-            )
             val appLogoResId = resolveAppLogoResId(requireContext())
-            // [BJJGJ-CUSTOM] Show organization branding first and keep upstream attribution in a lower-prominence section.
-            val aboutTitle = context.getString(R.string.about_organization_title, appNameProvider.appName)
-            val projectTitle = context.getString(R.string.about_open_source_licenses_title)
-            val librariesTitle = context.getString(R.string.about_libraries)
+            val organizationName = appNameProvider.appName
 
             setContent {
-                val (state, dispatch) = viewModel.observe { effect ->
-                    when (effect) {
-                        is Effect.OpenChangeLog ->
-                            findNavController()
-                                .navigate(R.id.action_aboutScreen_to_changelogScreen)
+                val versionNumber = viewModel.state.value.version
 
-                        is Effect.OpenUrl ->
-                            context.openUrl(effect.url)
-                    }
-                }
                 themeProvider.WithTheme {
                     AboutScreen(
-                        versionNumber = state.value.version,
+                        organizationName = organizationName,
+                        versionNumber = versionNumber,
                         appLogoResId = appLogoResId,
-                        libraries = state.value.libraries,
-                        aboutTitle = aboutTitle,
-                        projectTitle = projectTitle,
-                        librariesTitle = librariesTitle,
-                        displayChangeLog = {
-                            dispatch(Event.OnChangeLogClick)
-                        },
-                        displayAuthors = {
-                            dispatch(
-                                Event.OnSectionContentClick(
-                                    getString(R.string.app_authors_url),
-                                ),
-                            )
-                        },
                         displayLicense = {
-                            dispatch(
-                                Event.OnSectionContentClick(
-                                    getString(R.string.app_license_url),
-                                ),
-                            )
+                            findNavController().navigate(R.id.action_aboutScreen_to_openSourceLicensesScreen)
                         },
-                        displayWebSite = {
-                            dispatch(
-                                Event.OnSectionContentClick(
-                                    getString(R.string.app_webpage_url),
-                                ),
-                            )
-                        },
-                        displayForum = {
-                            dispatch(
-                                Event.OnSectionContentClick(
-                                    getString(R.string.user_forum_url),
-                                ),
-                            )
+                        displayLibraries = {
+                            findNavController().navigate(R.id.action_aboutScreen_to_librariesScreen)
                         },
                     )
                 }
@@ -125,7 +76,7 @@ class AboutFragment : Fragment() {
     }
 }
 
-private fun Context.openUrl(url: String) {
+internal fun Context.openUrl(url: String) {
     try {
         val viewIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
         startActivity(viewIntent)
@@ -135,8 +86,8 @@ private fun Context.openUrl(url: String) {
 }
 
 @Composable
-private fun LibraryList(
-    libraries: ImmutableList<Library>,
+internal fun LibraryList(
+    libraries: List<Library>,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         libraries.forEach { library ->
@@ -146,7 +97,7 @@ private fun LibraryList(
 }
 
 @Composable
-fun LibraryItem(
+internal fun LibraryItem(
     library: Library,
     modifier: Modifier = Modifier,
 ) {
@@ -179,24 +130,17 @@ fun LibraryItem(
 }
 
 @Composable
-fun AboutScreen(
+internal fun AboutScreen(
+    organizationName: String,
     versionNumber: String,
-    aboutTitle: String,
-    projectTitle: String,
-    librariesTitle: String,
     appLogoResId: Int,
-    libraries: ImmutableList<Library>,
     modifier: Modifier = Modifier,
-    displayChangeLog: () -> Unit = {},
-    displayAuthors: () -> Unit = {},
     displayLicense: () -> Unit = {},
-    displayWebSite: () -> Unit = {},
-    displayForum: () -> Unit = {},
+    displayLibraries: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     Surface(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
     ) {
         Column(
             modifier = modifier
@@ -204,53 +148,32 @@ fun AboutScreen(
                 .verticalScroll(scrollState),
         ) {
             AppLogo(logoResId = appLogoResId)
-            SectionTitle(title = aboutTitle)
+            SectionTitle(title = organizationName)
             SectionContent(
-                sectionLabel = stringResource(R.string.version),
-                sectionText = versionNumber,
+                sectionLabel = "\u7248\u672c\uff1a$versionNumber",
+                sectionText = "",
                 sectionImageId = DesignSystemR.drawable.ic_info,
-                onClick = displayChangeLog,
             )
+            // [BJJGJ-CUSTOM] Keep open-source attribution accessible from a secondary page without cluttering the About landing screen.
             SectionContent(
-                sectionLabel = stringResource(R.string.about_deployment_title),
-                sectionText = stringResource(R.string.about_deployment_value),
-                secondarySectionText = stringResource(R.string.about_open_source_attribution),
-                sectionImageId = DesignSystemR.drawable.ic_group,
-                onClick = displayAuthors,
-            )
-
-            SectionContent(
-                sectionLabel = stringResource(R.string.about_open_source_licenses_title),
-                sectionText = stringResource(R.string.about_open_source_license_value),
-                secondarySectionText = stringResource(R.string.about_open_source_license_subtitle),
+                sectionLabel = "\u5f00\u6e90\u8bb8\u53ef",
+                sectionText = "Apache License 2.0",
+                secondarySectionText = "\u67e5\u770b\u5f00\u6e90\u8bf4\u660e\u4e0e Thunderbird \u7f72\u540d",
                 sectionImageId = DesignSystemR.drawable.ic_code,
                 onClick = displayLicense,
             )
-
-            SectionTitle(title = projectTitle)
-
             SectionContent(
-                sectionLabel = stringResource(R.string.about_website_title),
-                sectionText = stringResource(R.string.app_webpage_url),
-                sectionImageId = DesignSystemR.drawable.ic_link,
-                onClick = displayWebSite,
+                sectionLabel = "\u5e93",
+                sectionText = "\u67e5\u770b\u7b2c\u4e09\u65b9\u5e93\u4e0e\u8bb8\u53ef\u5217\u8868",
+                sectionImageId = DesignSystemR.drawable.ic_group,
+                onClick = displayLibraries,
             )
-
-            SectionContent(
-                sectionLabel = stringResource(R.string.user_forum_title),
-                sectionText = stringResource(R.string.user_forum_url),
-                sectionImageId = DesignSystemR.drawable.ic_forum,
-                onClick = displayForum,
-            )
-
-            SectionTitle(title = librariesTitle)
-            LibraryList(libraries = libraries)
         }
     }
 }
 
 @Composable
-fun AppLogo(
+internal fun AppLogo(
     logoResId: Int,
     modifier: Modifier = Modifier,
 ) {
@@ -269,7 +192,7 @@ fun AppLogo(
 }
 
 @Composable
-fun SectionTitle(title: String, modifier: Modifier = Modifier) {
+internal fun SectionTitle(title: String, modifier: Modifier = Modifier) {
     TextTitleSmall(
         text = title,
         modifier = modifier
@@ -284,7 +207,7 @@ fun SectionTitle(title: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun SectionContent(
+internal fun SectionContent(
     sectionLabel: String,
     sectionText: String,
     sectionImageId: Int,
@@ -320,12 +243,14 @@ fun SectionContent(
                     .wrapContentHeight(),
             )
 
-            TextBodyMedium(
-                text = sectionText,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-            )
+            if (sectionText.isNotBlank()) {
+                TextBodyMedium(
+                    text = sectionText,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                )
+            }
 
             secondarySectionText?.let {
                 TextBodyMedium(

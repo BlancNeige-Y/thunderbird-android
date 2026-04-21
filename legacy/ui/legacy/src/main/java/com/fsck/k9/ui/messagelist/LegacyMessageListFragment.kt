@@ -1175,7 +1175,8 @@ class LegacyMessageListFragment :
         menu.findItem(R.id.debug_invalidate_access_token_local).isVisible = showOAuthDebug
         menu.findItem(R.id.debug_invalidate_access_token_server).isVisible = showOAuthDebug
         menu.findItem(R.id.debug_force_auth_failure).isVisible = showOAuthDebug
-        menu.findItem(R.id.debug_feature_flags).isVisible = isDebug
+        // [BJJGJ-CUSTOM] Hide feature-flag debug entry from end users while keeping other debug-only flows intact.
+        menu.findItem(R.id.debug_feature_flags).isVisible = false
     }
 
     override fun collapseSearchView() {

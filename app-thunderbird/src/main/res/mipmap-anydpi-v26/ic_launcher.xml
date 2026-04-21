@@ -4,7 +4,7 @@
     <background android:drawable="@color/launcher_icon_background" />
     <foreground>
         <inset
-            android:drawable="@drawable/ic_app_logo"
+            android:drawable="@drawable/bjjgj_launcher_foreground"
             android:inset="22%"
             />
     </foreground>

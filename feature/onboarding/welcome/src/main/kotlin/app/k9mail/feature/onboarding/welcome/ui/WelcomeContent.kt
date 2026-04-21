@@ -53,7 +53,7 @@ internal fun WelcomeContent(
                 contentPadding = contentPadding,
                 verticalArrangement = Arrangement.SpaceEvenly,
                 header = {
-                    WelcomeHeaderSection(title = appName)
+                    WelcomeHeaderSection(appName = appName)
                 },
                 footer = {
                     WelcomeFooterSection(
@@ -72,7 +72,7 @@ internal fun WelcomeContent(
 
 @Composable
 private fun WelcomeHeaderSection(
-    title: String,
+    appName: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -83,13 +83,14 @@ private fun WelcomeHeaderSection(
         verticalArrangement = Arrangement.spacedBy(MainTheme.spacings.double),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        WelcomeLogo()
-        WelcomeTitleItem(title = title)
+        WelcomeLogo(appName = appName)
+        WelcomeTitleItem()
     }
 }
 
 @Composable
 private fun WelcomeLogo(
+    appName: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -104,7 +105,7 @@ private fun WelcomeLogo(
         ) {
             Image(
                 painter = painterResource(MainTheme.images.logo),
-                contentDescription = null,
+                contentDescription = appName,
                 modifier = Modifier
                     .size(LOGO_SIZE_DP.dp)
                     .align(Alignment.Center),
@@ -115,14 +116,12 @@ private fun WelcomeLogo(
 
 @Composable
 private fun WelcomeTitleItem(
-    title: String,
     modifier: Modifier = Modifier,
 ) {
     Box(
         modifier = modifier,
     ) {
         WelcomeTitle(
-            title = title,
             modifier = Modifier.defaultItemModifier(),
         )
     }
@@ -130,15 +129,15 @@ private fun WelcomeTitleItem(
 
 @Composable
 private fun WelcomeTitle(
-    title: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier.padding(horizontal = MainTheme.spacings.quadruple),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        // [BJJGJ-CUSTOM] Replace Thunderbird promotional copy with formal deployment-specific messaging.
         TextDisplayMedium(
-            text = title,
+            text = stringResource(id = R.string.onboarding_welcome_title),
             textAlign = TextAlign.Center,
         )
     }

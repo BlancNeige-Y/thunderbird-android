@@ -50,7 +50,29 @@
             android:id="@+id/action_aboutScreen_to_changelogScreen"
             app:destination="@id/changelogScreen"
             />
+
+        <action
+            android:id="@+id/action_aboutScreen_to_openSourceLicensesScreen"
+            app:destination="@id/openSourceLicensesScreen"
+            />
+
+        <action
+            android:id="@+id/action_aboutScreen_to_librariesScreen"
+            app:destination="@id/librariesScreen"
+            />
     </fragment>
+
+    <fragment
+        android:id="@+id/openSourceLicensesScreen"
+        android:name="com.fsck.k9.ui.settings.OpenSourceLicensesFragment"
+        android:label="开源许可"
+        />
+
+    <fragment
+        android:id="@+id/librariesScreen"
+        android:name="com.fsck.k9.ui.settings.LibrariesFragment"
+        android:label="@string/about_libraries"
+        />
 
     <activity
         android:id="@+id/generalSettingsScreen"

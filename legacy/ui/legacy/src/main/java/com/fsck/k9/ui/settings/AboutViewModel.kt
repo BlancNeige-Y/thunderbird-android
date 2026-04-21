@@ -11,7 +11,8 @@ internal class AboutViewModel(
     appVersionProvider: AppVersionProvider,
 ) : BaseViewModel<State, Event, Effect>(
     initialState = State(
-        version = appVersionProvider.getVersionNumber(),
+        // [BJJGJ-CUSTOM] Keep internal build metadata unchanged, but pin the user-facing About version label.
+        version = "V1.0",
         libraries = USED_LIBRARIES,
     ),
 ) {

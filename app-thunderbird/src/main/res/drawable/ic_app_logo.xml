@@ -1,29 +1,4 @@
-<vector
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="72dp"
-    android:height="72dp"
-    android:viewportWidth="72"
-    android:viewportHeight="72"
-    >
-    <!-- [BJJGJ-CUSTOM] Replace Thunderbird branding with a neutral organization-specific emblem for splash/about. -->
-    <path
-        android:fillColor="#0B4F8A"
-        android:pathData="M36,4L60,14V30C60,45.7 49.8,60.1 36,64C22.2,60.1 12,45.7 12,30V14L36,4Z"
-        />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M21,23h30v4H21z"
-        />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M21,31h30v4H21z"
-        />
-    <path
-        android:fillColor="#FFFFFF"
-        android:pathData="M21,39h30v4H21z"
-        />
-    <path
-        android:fillColor="#DCEBFA"
-        android:pathData="M24,48h24v5H24z"
-        />
-</vector>
+<?xml version="1.0" encoding="utf-8"?>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:src="@drawable/bjjgj_in_app_logo" />
