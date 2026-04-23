@@ -1,16 +1,22 @@
 package app.k9mail.feature.onboarding.welcome.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,7 +46,7 @@ internal fun WelcomeContent(
         modifier = modifier,
     ) {
         ResponsiveContent { contentPadding ->
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(contentPadding)
@@ -48,19 +54,21 @@ internal fun WelcomeContent(
                         horizontal = MainTheme.spacings.quadruple,
                         vertical = MainTheme.spacings.double,
                     ),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Column(
                     modifier = Modifier
-                        .align(Alignment.Center)
                         .fillMaxWidth()
+                        .weight(1f)
                         .widthIn(max = 420.dp),
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     WelcomeHeaderSection(
-                        appName = appName,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     WelcomeMessageItem(
-                        modifier = Modifier.padding(top = MainTheme.spacings.double),
+                        modifier = Modifier.padding(top = MainTheme.spacings.triple),
                     )
                     WelcomeFooterSection(
                         showImportButton = showImportButton,
@@ -71,7 +79,7 @@ internal fun WelcomeContent(
                 }
 
                 WelcomeServicePhone(
-                    modifier = Modifier.align(Alignment.BottomCenter),
+                    modifier = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -80,7 +88,6 @@ internal fun WelcomeContent(
 
 @Composable
 private fun WelcomeHeaderSection(
-    appName: String,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -88,11 +95,32 @@ private fun WelcomeHeaderSection(
             .fillMaxWidth()
             .defaultItemModifier()
             .widthIn(max = 360.dp),
-        verticalArrangement = Arrangement.spacedBy(MainTheme.spacings.half),
+        verticalArrangement = Arrangement.spacedBy(MainTheme.spacings.double),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        WelcomeBadge(
+            modifier = Modifier.fillMaxWidth(),
+        )
         WelcomeTitleItem(
             modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
+private fun WelcomeBadge(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+        // [BJJGJ-CUSTOM] Use the provided police badge asset as the formal welcome-page visual anchor.
+        Image(
+            painter = painterResource(id = R.drawable.bjjgj_police_badge),
+            contentDescription = null,
+            modifier = Modifier.size(92.dp),
+            contentScale = ContentScale.Fit,
         )
     }
 }
@@ -118,19 +146,23 @@ private fun WelcomeTitle(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = MainTheme.spacings.default),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        // [BJJGJ-CUSTOM] Force the formal welcome title into a stable two-line composition without reintroducing the removed top logo block.
+        // [BJJGJ-CUSTOM] Keep the formal welcome title in a balanced two-line composition under the badge.
         TextTitleLarge(
             text = WELCOME_TITLE_LINE_1,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 280.dp),
             textAlign = TextAlign.Center,
             maxLines = 1,
         )
         TextTitleLarge(
             text = WELCOME_TITLE_LINE_2,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 220.dp),
             textAlign = TextAlign.Center,
             maxLines = 1,
         )
@@ -162,7 +194,7 @@ private fun WelcomeMessage(
     ) {
         TextBodyLarge(
             text = stringResource(id = R.string.onboarding_welcome_subtitle),
-            modifier = Modifier.widthIn(max = 320.dp),
+            modifier = Modifier.widthIn(max = 300.dp),
             textAlign = TextAlign.Center,
         )
     }
@@ -203,7 +235,9 @@ private fun WelcomeFooter(
         ButtonFilled(
             text = stringResource(id = R.string.onboarding_welcome_start_button),
             onClick = onStartClick,
-            modifier = Modifier.testTagAsResourceId("onboarding_welcome_start_button"),
+            modifier = Modifier
+                .widthIn(min = 128.dp)
+                .testTagAsResourceId("onboarding_welcome_start_button"),
         )
         if (showImportButton) {
             ButtonText(
@@ -219,14 +253,19 @@ private fun WelcomeFooter(
 private fun WelcomeServicePhone(
     modifier: Modifier = Modifier,
 ) {
-    TextBodySmall(
-        text = stringResource(R.string.onboarding_welcome_developed_by),
+    Column(
         modifier = modifier
-            .fillMaxWidth()
             .padding(horizontal = MainTheme.spacings.double)
             .padding(bottom = MainTheme.spacings.triple),
-        textAlign = TextAlign.Center,
-    )
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Spacer(modifier = Modifier.height(MainTheme.spacings.double))
+        TextBodySmall(
+            text = stringResource(R.string.onboarding_welcome_developed_by),
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+        )
+    }
 }
 
 private fun Modifier.defaultItemModifier() = composed {

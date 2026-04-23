@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- [BJJGJ-CUSTOM] Replace the visible Thunderbird brand strings with the deployment organization name. -->
-    <string name="app_name" translatable="false">北京市监狱管理局</string>
-    <string name="brand_name" translatable="false">北京市监狱管理局</string>
+    <!-- [BJJGJ-CUSTOM] Replace the launcher-visible app branding with a short internal deployment name. -->
+    <string name="app_name" translatable="false">京狱邮件</string>
+    <string name="brand_name" translatable="false">京狱邮件</string>
 </resources>

@@ -34,3 +34,70 @@
 - Compile/build status: Passed
 - APK generation status: Passed
 - Current app usability: Preserved. Existing business behavior remains intact, including direct onboarding-to-setup navigation, strict `@bjjgj.gov.cn` enforcement, fixed POP3/SMTP settings, disabled manual configuration, and current login behavior.
+
+---
+
+# This Pass Summary
+- Build result: Passed
+- Exact Gradle commands used:
+  - `.\gradlew.bat --no-configuration-cache --console plain :feature:onboarding:welcome:compileDebugKotlin`
+  - `.\gradlew.bat --no-configuration-cache :app-thunderbird:assembleDebug --stacktrace`
+- Timestamp: `2026-04-21 14:04:46 +08:00`
+
+# Welcome Page Badge Redesign
+- Reworked the welcome page into a formal five-part structure:
+  - top police badge
+  - two-line title
+  - subtitle
+  - centered start button
+  - bottom service-phone footer
+- Integrated the root-level `jh.png` file as the official badge shown on the welcome page.
+- Removed the previous empty-feeling upper section by giving the page a clear visual anchor without changing any onboarding behavior.
+- Kept the title fixed as:
+  - `北京市监狱管理局`
+  - `专用邮件客户端`
+- Preserved the subtitle `面向内部办公场景的安全邮件应用` and the bottom service phone text `服务电话：53860032`.
+
+# Files Modified
+- `feature/onboarding/welcome/src/main/kotlin/app/k9mail/feature/onboarding/welcome/ui/WelcomeContent.kt`
+  - Added the badge image block, restructured the page layout into a vertically balanced content column plus footer, tightened title widths, and slightly widened the start button presentation.
+  - Why: to match the approved formal homepage sketch while preserving the current business flow.
+- `feature/onboarding/welcome/src/main/res/drawable/bjjgj_police_badge.png`
+  - Added the copied welcome-page badge asset from the project-root `jh.png`.
+  - Why: to use the provided police badge as the official top visual on the landing page.
+
+# Final Output
+- Build status: Passed
+- APK generation status: Passed
+- Updated APK paths:
+  - `C:\Users\Ye\Desktop\thunderbird-android\app-thunderbird\build\outputs\apk\foss\debug\app-thunderbird-foss-debug.apk`
+  - `C:\Users\Ye\Desktop\thunderbird-android\app-thunderbird\build\outputs\apk\full\debug\app-thunderbird-full-debug.apk`
+- Functional status: Preserved. The welcome page UI changed, but onboarding still goes directly to account setup and the existing customized login/setup restrictions remain unchanged.
+
+---
+
+# This Pass Summary
+- Build result: Passed
+- Exact Gradle command used: `.\gradlew.bat --no-configuration-cache :app-thunderbird:assembleDebug --stacktrace`
+- Timestamp: `2026-04-21 15:07:56 +08:00`
+
+# App Name Update
+- Changed the installed official app name from the organization name display to the shorter launcher name `京狱邮件`.
+- Restored a dedicated test-build app label resource as `京狱邮件（测试版）` so the separate test APK can still remain visually distinct when that build type is used again.
+
+# Files Modified
+- `app-thunderbird/src/main/res/values/strings.xml`
+  - Updated `app_name` and `brand_name` to `京狱邮件`.
+  - Why: to make the installed app name shorter, clearer, and more suitable for launcher display.
+- `app-thunderbird/src/debug/res/values/strings.xml`
+  - Updated the debug build `app_name` to `京狱邮件`.
+  - Why: to keep the currently installed debug/customized build aligned with the new launcher name.
+- `app-thunderbird/src/uitest/res/values/strings.xml`
+  - Added the test-build app name `京狱邮件（测试版）`.
+  - Why: to preserve visual separation between the official app and the dedicated UI-test APK.
+
+# Final Output
+- Build status: Passed
+- APK paths:
+  - `C:\Users\Ye\Desktop\thunderbird-android\app-thunderbird\build\outputs\apk\foss\debug\app-thunderbird-foss-debug.apk`
+  - `C:\Users\Ye\Desktop\thunderbird-android\app-thunderbird\build\outputs\apk\full\debug\app-thunderbird-full-debug.apk`
