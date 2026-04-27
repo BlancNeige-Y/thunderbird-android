@@ -101,3 +101,27 @@
 - APK paths:
   - `C:\Users\Ye\Desktop\thunderbird-android\app-thunderbird\build\outputs\apk\foss\debug\app-thunderbird-foss-debug.apk`
   - `C:\Users\Ye\Desktop\thunderbird-android\app-thunderbird\build\outputs\apk\full\debug\app-thunderbird-full-debug.apk`
+
+---
+
+# This Pass Summary
+- Build result: Passed
+- Exact Gradle command used: `.\gradlew.bat --no-configuration-cache :app-thunderbird:assembleDebug --stacktrace`
+- Timestamp: `2026-04-27 22:37:44 +08:00`
+
+# Launcher Icon Centering Fix
+- Corrected the SVG-derived launcher icon artwork so the white mail mark is visually centered on the home screen instead of appearing left-shifted.
+- Applied the same centering offset to both the normal foreground layer and the monochrome themed-icon layer to keep launcher behavior consistent across Android launchers.
+
+# Files Modified
+- `app-thunderbird/src/main/res/drawable/bjjgj_launcher_foreground.xml`
+  - Added a small rightward translation group around the SVG-derived foreground art.
+  - Why: the original `icon.svg` content itself was slightly left of the vector viewport center, which made the launcher symbol look off-center on device home screens.
+- `app-thunderbird/src/main/res/drawable/ic_app_logo_monochrome.xml`
+  - Added the same rightward translation to the monochrome launcher layer.
+  - Why: themed icons should remain visually centered just like the standard adaptive icon.
+
+# Final Output
+- Build status: Passed
+- APK path:
+  - `C:\Users\Ye\Desktop\thunderbird-android\app-thunderbird\build\outputs\apk\foss\debug\app-thunderbird-foss-debug.apk`
