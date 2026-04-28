@@ -29,17 +29,12 @@ import com.mikepenz.fastadapter.drag.ItemTouchCallback
 import com.mikepenz.fastadapter.drag.SimpleDragCallback
 import com.mikepenz.fastadapter.utils.DragDropUtil
 import net.thunderbird.core.android.account.LegacyAccountDto
-import net.thunderbird.core.common.provider.BrandNameProvider
-import net.thunderbird.feature.funding.api.FundingManager
-import net.thunderbird.feature.funding.api.FundingType
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import app.k9mail.feature.settings.importing.R as SettingsImportR
 
 class SettingsListFragment : Fragment(), ItemTouchCallback {
     private val viewModel: SettingsViewModel by viewModel()
-    private val fundingManager: FundingManager by inject()
-    private val brandNameProvider: BrandNameProvider by inject()
 
     private lateinit var itemAdapter: ItemAdapter<GenericItem>
 
@@ -131,14 +126,6 @@ class SettingsListFragment : Fragment(), ItemTouchCallback {
                     navigationAction = R.id.action_settingsListScreen_to_aboutScreen,
                     icon = Icons.Outlined.Info,
                 )
-
-                addUrlAction(
-                    text = getString(R.string.get_help_title),
-                    url = getString(R.string.user_forum_url),
-                    icon = Icons.Outlined.Help,
-                )
-
-                addFunding()
             }
         }
 
@@ -146,28 +133,7 @@ class SettingsListFragment : Fragment(), ItemTouchCallback {
     }
 
     private fun SettingsListBuilder.addFunding() {
-        when (fundingManager.getFundingType()) {
-            FundingType.GOOGLE_PLAY -> {
-                addIntent(
-                    text = getString(R.string.settings_list_action_support, brandNameProvider.brandName),
-                    icon = Icons.Outlined.Favorite,
-                    intent = FeatureLauncherActivity.getIntent(
-                        context = requireActivity(),
-                        target = FeatureLauncherTarget.Funding,
-                    ),
-                )
-            }
-
-            FundingType.LINK -> {
-                addUrlAction(
-                    text = getString(R.string.settings_list_action_support, brandNameProvider.brandName),
-                    url = getString(R.string.funding_url, requireContext().getPackageName()),
-                    icon = Icons.Outlined.Favorite,
-                )
-            }
-
-            FundingType.NO_FUNDING -> Unit
-        }
+        // [BJJGJ-CUSTOM] Hide funding/support entry from the user-facing settings list.
     }
 
     private fun handleItemClick(item: GenericItem) {

@@ -1,68 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="account_setup_error_network">Network error. Please check your connection status and try again.</string>
-    <string name="account_setup_error_unknown">Unknown error</string>
+    <string name="account_setup_error_network">网络错误，请检查连接状态后重试。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_error_unknown">未知错误</string> <!-- [BJJGJ-CUSTOM] -->
 
-    <string name="account_setup_auto_discovery_validation_error_email_address_required">Email address is required.</string>
-    <string name="account_setup_auto_discovery_validation_error_email_address_not_allowed">This email address is not allowed.</string>
-    <string name="account_setup_auto_discovery_validation_error_email_address_not_supported">This email address is not supported.</string>
-    <string name="account_setup_auto_discovery_validation_error_email_address_invalid">This is not recognized as a valid email address.</string>
-    <string name="account_setup_auto_discovery_validation_error_password_required">Password is required.</string>
+    <string name="account_setup_auto_discovery_validation_error_email_address_required">账号不能为空。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_validation_error_email_address_not_allowed">该邮箱地址不被允许。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_validation_error_email_address_not_supported">该邮箱地址不受支持。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_validation_error_email_address_invalid">邮箱地址格式无效。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_validation_error_password_required">密码不能为空。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_bjjgj_local_part_label">账号</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_bjjgj_full_email_label">完整邮箱</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_bjjgj_full_email_value">%1$s@bjjgj.gov.cn</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_bjjgj_description">请输入账号和密码，系统将自动使用单位固定邮件服务器配置。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_bjjgj_local_part_invalid">账号中不能包含 @ 符号。</string> <!-- [BJJGJ-CUSTOM] -->
 
     <string name="account_setup_auto_discovery_connection_security_start_tls">StartTLS</string>
     <string name="account_setup_auto_discovery_connection_security_ssl">SSL/TLS</string>
-    <string name="account_setup_auto_discovery_loading_message">Looking up configuration…</string>
-    <string name="account_setup_auto_discovery_loading_error">Failed to load email configuration</string>
-    <string name="account_setup_auto_discovery_status_header_title_configuration_found">Configuration found</string>
-    <string name="account_setup_auto_discovery_result_header_title_configuration_not_found">Configuration not found</string>
-    <string name="account_setup_auto_discovery_result_header_subtitle_configuration_trusted">Configure automatically</string>
-    <string name="account_setup_auto_discovery_result_header_subtitle_configuration_untrusted">This configuration is not trusted</string>
-    <string name="account_setup_auto_discovery_result_disclaimer_untrusted_configuration">We received the configuration for your email server over a connection that isn\'t as secure as we\'d like. This means that there is a tiny chance that someone could have altered it. Could you please double-check the provided configuration to make sure it\'s as it should be?</string>
-    <string name="account_setup_auto_discovery_result_header_subtitle_configuration_not_found">Configure manually</string>
-    <string name="account_setup_auto_discovery_result_edit_configuration_button_label">Edit configuration</string>
-    <string name="account_setup_auto_discovery_result_approval_checkbox_label">I trust this configuration</string>
-    <string name="account_setup_auto_discovery_result_approval_error_approval_required">It is required to approve the configuration.</string>
+    <string name="account_setup_auto_discovery_loading_message">正在查找配置…</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_loading_error">加载邮件配置失败</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_status_header_title_configuration_found">已找到配置</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_result_header_title_configuration_not_found">未找到配置</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_result_header_subtitle_configuration_trusted">自动配置</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_result_header_subtitle_configuration_untrusted">该配置不受信任</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_result_disclaimer_untrusted_configuration">收到邮件服务器配置时，所使用的连接安全性低于预期。这意味着配置存在极小概率被第三方篡改，请再次核对所提供的配置是否正确。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_result_header_subtitle_configuration_not_found">手动配置</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_result_edit_configuration_button_label">编辑配置</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_result_approval_checkbox_label">我信任该配置</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_auto_discovery_result_approval_error_approval_required">必须先确认该配置。</string> <!-- [BJJGJ-CUSTOM] -->
 
-    <string name="account_setup_special_folders_form_description">Please specify the special folders for your account.</string>
-    <string name="account_setup_special_folders_form_description_automatic">The \"Automatic\" entry will follow changes made by the server automatically. The current server value is displayed in parentheses.</string>
-    <string name="account_setup_special_folders_loading_message">Fetching list of folders…</string>
-    <string name="account_setup_special_folders_error_message">Failed to fetch the list of folders from the server</string>
-    <string name="account_setup_special_folders_success_message">All special folders have been configured automatically by the server.</string>
-    <string name="account_setup_special_folders_archive_folder_label">Archive folder</string>
-    <string name="account_setup_special_folders_drafts_folder_label">Drafts folder</string>
-    <string name="account_setup_special_folders_sent_folder_label">Sent folder</string>
-    <string name="account_setup_special_folders_spam_folder_label">Spam folder</string>
-    <string name="account_setup_special_folders_trash_folder_label">Trash folder</string>
-    <string name="account_setup_special_folders_folder_none">None</string>
-    <string name="account_setup_special_folders_folder_automatic">Automatic (%s)</string>
+    <string name="account_setup_special_folders_form_description">请为该账号指定特殊文件夹。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_form_description_automatic">“自动”选项会自动跟随服务器设置变化，当前服务器值会显示在括号中。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_loading_message">正在获取文件夹列表…</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_error_message">从服务器获取文件夹列表失败</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_success_message">所有特殊文件夹均已由服务器自动配置。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_archive_folder_label">归档文件夹</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_drafts_folder_label">草稿文件夹</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_sent_folder_label">已发送文件夹</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_spam_folder_label">垃圾邮件文件夹</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_trash_folder_label">已删除文件夹</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_folder_none">无</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_special_folders_folder_automatic">自动（%s）</string> <!-- [BJJGJ-CUSTOM] -->
 
-    <string name="account_setup_options_section_display_options">Display options</string>
-    <string name="account_setup_options_account_name_label">Account name</string>
-    <string name="account_setup_options_account_name_error_blank">Account name can\'t be blank.</string>
-    <string name="account_setup_options_your_name_label">Your name</string>
-    <string name="account_setup_options_your_name_error_required">Your name is required.</string>
-    <string name="account_setup_options_email_signature_label">Email signature</string>
-    <string name="account_setup_options_email_signature_error_blank">Email signature name can\'t be blank.</string>
-    <string name="account_setup_options_section_sync_options">Sync options</string>
-    <string name="account_setup_options_account_check_frequency_label">Check frequency</string>
-    <string name="account_setup_options_email_check_frequency_never">Never</string>
+    <string name="account_setup_options_section_display_options">显示选项</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_account_name_label">账户名称</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_account_name_error_blank">账户名称不能为空。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_your_name_label">您的姓名</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_your_name_error_required">请输入您的姓名。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_email_signature_label">邮件签名</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_email_signature_error_blank">邮件签名不能为空。</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_section_sync_options">同步选项</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_account_check_frequency_label">检查频率</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_email_check_frequency_never">从不</string> <!-- [BJJGJ-CUSTOM] -->
     <plurals name="account_setup_options_email_check_frequency_minutes">
-        <item quantity="one">Every minute</item>
-        <item quantity="other">Every %d minutes</item>
+        <item quantity="one">每分钟</item>
+        <item quantity="other">每 %d 分钟</item>
     </plurals>
     <plurals name="account_setup_options_email_check_frequency_hours">
-        <item quantity="one">Every hour</item>
-        <item quantity="other">Every %d hours</item>
+        <item quantity="one">每小时</item>
+        <item quantity="other">每 %d 小时</item>
     </plurals>
     <plurals name="account_setup_options_email_display_count_messages">
-        <item quantity="one">1 message</item>
-        <item quantity="other">%d messages</item>
+        <item quantity="one">1 封邮件</item>
+        <item quantity="other">%d 封邮件</item>
     </plurals>
-    <string name="account_setup_options_email_display_count_label">Number of messages to display</string>
-    <string name="account_setup_options_show_notifications_label">Show notifications</string>
+    <string name="account_setup_options_email_display_count_label">显示邮件数量</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_options_show_notifications_label">显示通知</string> <!-- [BJJGJ-CUSTOM] -->
 
-    <string name="account_setup_create_account_creating">Creating account…</string>
-    <string name="account_setup_create_account_error">An error occurred while trying to create the account</string>
-    <string name="account_setup_create_account_created">Account successfully created</string>
+    <string name="account_setup_create_account_creating">正在创建账户…</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_create_account_error">创建账户时发生错误</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_setup_create_account_created">账户创建成功</string> <!-- [BJJGJ-CUSTOM] -->
 </resources>

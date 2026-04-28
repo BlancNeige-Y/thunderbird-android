@@ -20,10 +20,12 @@ internal interface AboutContract {
         data object OnChangeLogClick : Event
         data class OnSectionContentClick(val url: String) : Event
         data class OnLibraryClick(val library: Library) : Event
+        data object OnLibrariesClick : Event
     }
 
     sealed interface Effect {
         data class OpenUrl(val url: String) : Effect
         data object OpenChangeLog : Effect
+        data object OpenLibraries : Effect
     }
 }

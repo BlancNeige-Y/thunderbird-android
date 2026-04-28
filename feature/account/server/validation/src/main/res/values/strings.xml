@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="account_server_validation_error_authentication">Authentication error</string>
-    <string name="account_server_validation_error_network">Network error</string>
-    <string name="account_server_validation_error_server">Server error</string>
-    <string name="account_server_validation_error_unknown">Unknown error</string>
-    <string name="account_server_validation_error_client_certificate_expired">The client certificate is no longer valid</string>
-    <string name="account_server_validation_error_client_certificate_retrieval_failure">"The client certificate couldn't be accessed"</string>
-    <string name="account_server_validation_error_missing_server_capability">Missing server capability</string>
-    <string name="account_server_validation_error_details">Details:\n%s</string>
-    <string name="account_server_validation_error_missing_server_capability_details">The server is missing this capability:\n%s</string>
-    <string name="account_server_validation_incoming_loading_message">Checking incoming server settings…</string>
-    <string name="account_server_validation_incoming_loading_error">Checking incoming server settings failed</string>
-    <string name="account_server_validation_incoming_success">Incoming server settings verified</string>
-    <string name="account_server_validation_outgoing_loading_message">Checking outgoing server settings…</string>
-    <string name="account_server_validation_outgoing_loading_error">Checking outgoing server settings failed</string>
-    <string name="account_server_validation_outgoing_success">Outgoing server settings verified</string>
-    <string name="account_server_validation_sign_in">Please sign in</string>
+    <string name="account_server_validation_error_authentication">认证错误</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_error_network">网络错误</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_error_server">服务器错误</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_error_unknown">未知错误</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_error_client_certificate_expired">客户端证书已失效</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_error_client_certificate_retrieval_failure">无法访问客户端证书</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_error_missing_server_capability">服务器能力缺失</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_error_details">详细信息：\n%s</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_error_missing_server_capability_details">服务器缺少以下能力：\n%s</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_incoming_loading_message">正在检查收件服务器设置…</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_incoming_loading_error">收件服务器设置检查失败</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_incoming_success">收件服务器设置验证成功</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_outgoing_loading_message">正在检查发件服务器设置…</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_outgoing_loading_error">发件服务器设置检查失败</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_outgoing_success">发件服务器设置验证成功</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="account_server_validation_sign_in">请登录</string> <!-- [BJJGJ-CUSTOM] -->
 </resources>

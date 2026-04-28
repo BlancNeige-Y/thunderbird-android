@@ -106,6 +106,7 @@ class GeneralSettingsFragment : PreferenceFragmentCompat() {
                 }
             }
 
+        findPreference<Preference>("debug_preferences")?.remove() // [BJJGJ-CUSTOM]
         findPreference<Preference>("debug_secret_debug_screen")?.apply {
             if (!BuildConfig.DEBUG) {
                 remove()

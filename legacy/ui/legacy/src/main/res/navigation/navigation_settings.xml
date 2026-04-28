@@ -50,6 +50,11 @@
             android:id="@+id/action_aboutScreen_to_changelogScreen"
             app:destination="@id/changelogScreen"
             />
+
+        <action
+            android:id="@+id/action_aboutScreen_to_librariesScreen"
+            app:destination="@id/librariesScreen"
+            />
     </fragment>
 
     <activity
@@ -91,6 +96,12 @@
             android:defaultValue="CHANGE_LOG"
             />
     </fragment>
+
+    <fragment
+        android:id="@+id/librariesScreen"
+        android:name="com.fsck.k9.ui.settings.LibrariesFragment"
+        android:label="@string/about_libraries"
+        />
 
     <fragment
         android:id="@+id/recentChangesScreen"

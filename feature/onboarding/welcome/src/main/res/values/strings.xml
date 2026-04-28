@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <string name="onboarding_welcome_text">An open source, privacy-focused and ad-free email app for Android.</string>
-    <string name="onboarding_welcome_start_button">Get started</string>
+    <string name="onboarding_welcome_text">面向内部办公场景的安全邮件应用</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="onboarding_welcome_start_button">开始</string> <!-- [BJJGJ-CUSTOM] -->
     <string name="onboarding_welcome_import_button">Import settings</string>
-    <!-- Small note at the bottom of the welcome screen. "MZLA Technologies" and "Mozilla" are company/brand names that shouldn't be translated. -->
-    <string name="onboarding_welcome_developed_by">Developed by a dedicated team at MZLA Technologies and a global community of volunteers. Part of the Mozilla family.</string>
+    <string name="onboarding_welcome_developed_by">服务电话：53860032</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="onboarding_welcome_title_line_one">北京市监狱管理局</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="onboarding_welcome_title_line_two">专用邮件客户端</string> <!-- [BJJGJ-CUSTOM] -->
 </resources>

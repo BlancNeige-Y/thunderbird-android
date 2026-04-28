@@ -20,6 +20,9 @@ class SettingsImporter internal constructor(
     private val accountSettingsWriter: AccountSettingsWriter,
     private val unifiedInboxConfigurator: UnifiedInboxConfigurator,
 ) {
+    private val allowedDomain = "@bjjgj.gov.cn" // [BJJGJ-CUSTOM]
+    private val allowedServer = "172.26.82.125" // [BJJGJ-CUSTOM]
+
     /**
      * Parses an import [InputStream] and returns information on whether it contains global settings and/or account
      * settings. For all account configurations found, the name of the account along with the account UUID is returned.
@@ -157,6 +160,7 @@ class SettingsImporter internal constructor(
         contentVersion: Int,
         account: SettingsFile.Account,
     ): AccountDescriptionPair {
+        validateBjjgjAccount(account)
         val validatedAccount = accountSettingsValidator.validate(contentVersion, account)
 
         val currentAccount = accountSettingsUpgrader.upgrade(contentVersion, validatedAccount)
@@ -196,6 +200,21 @@ class SettingsImporter internal constructor(
             incomingServerName!!,
             outgoingServerName!!,
         )
+    }
+
+    private fun validateBjjgjAccount(account: SettingsFile.Account) {
+        val identityEmails = account.identities.orEmpty().mapNotNull { it.email }
+        val hasAllowedIdentity = identityEmails.any { it.endsWith(allowedDomain, ignoreCase = true) }
+        val usernamesAllowed = listOfNotNull(account.incoming?.username, account.outgoing?.username)
+            .all { it.endsWith(allowedDomain, ignoreCase = true) }
+        val serversAllowed = listOfNotNull(account.incoming?.host, account.outgoing?.host)
+            .all { it == allowedServer }
+
+        if (!hasAllowedIdentity || !usernamesAllowed || !serversAllowed) {
+            throw InvalidSettingValueException(
+                "Only @bjjgj.gov.cn accounts with the fixed BJJGJ server settings can be imported",
+            )
+        }
     }
 
     private fun getAccountDisplayName(account: SettingsFile.Account): String {

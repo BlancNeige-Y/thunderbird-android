@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bjjgj_about_org_name">北京市监狱管理局</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="bjjgj_about_version">版本：%1$s</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="bjjgj_about_open_source_licenses">开源许可</string> <!-- [BJJGJ-CUSTOM] -->
+    <string name="bjjgj_about_libraries_entry">库</string> <!-- [BJJGJ-CUSTOM] -->
+</resources>

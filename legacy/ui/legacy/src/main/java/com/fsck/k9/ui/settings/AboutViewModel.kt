@@ -11,7 +11,7 @@ internal class AboutViewModel(
     appVersionProvider: AppVersionProvider,
 ) : BaseViewModel<State, Event, Effect>(
     initialState = State(
-        version = appVersionProvider.getVersionNumber(),
+        version = "V1.0", // [BJJGJ-CUSTOM]
         libraries = USED_LIBRARIES,
     ),
 ) {
@@ -20,11 +20,12 @@ internal class AboutViewModel(
             is Event.OnChangeLogClick -> emitEffect(Effect.OpenChangeLog)
             is Event.OnSectionContentClick -> emitEffect(Effect.OpenUrl(event.url))
             is Event.OnLibraryClick -> emitEffect(Effect.OpenUrl(event.library.url))
+            Event.OnLibrariesClick -> emitEffect(Effect.OpenLibraries)
         }
     }
 }
 
-private val USED_LIBRARIES = persistentListOf(
+internal val USED_LIBRARIES = persistentListOf(
     Library(
         "Android Jetpack libraries",
         "https://developer.android.com/jetpack",

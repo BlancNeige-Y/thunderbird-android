@@ -46,7 +46,7 @@ fun AccountSetupNavHost(
     onFinish: (AccountSetupRoute) -> Unit,
 ) {
     val navController = rememberNavController()
-    var isAutomaticConfig by rememberSaveable { mutableStateOf(false) }
+    var isAutomaticConfig by rememberSaveable { mutableStateOf(true) } // [BJJGJ-CUSTOM]
     var hasSpecialFolders by rememberSaveable { mutableStateOf(false) }
 
     NavHost(
@@ -57,12 +57,8 @@ fun AccountSetupNavHost(
             AccountAutoDiscoveryScreen(
                 onNext = { result ->
                     isAutomaticConfig = result.isAutomaticConfig
-                    if (isAutomaticConfig) {
-                        hasSpecialFolders = checkSpecialFoldersSupport(result.incomingProtocolType)
-                        navController.navigate(NESTED_NAVIGATION_INCOMING_SERVER_VALIDATION)
-                    } else {
-                        navController.navigate(NESTED_NAVIGATION_INCOMING_SERVER_CONFIG)
-                    }
+                    hasSpecialFolders = checkSpecialFoldersSupport(result.incomingProtocolType)
+                    navController.navigate(NESTED_NAVIGATION_INCOMING_SERVER_VALIDATION)
                 },
                 onBack = onBack,
                 viewModel = koinViewModel<AccountAutoDiscoveryViewModel>(),
